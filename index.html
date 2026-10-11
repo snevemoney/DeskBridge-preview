@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DeskBridge</title>
+<style>
+:root{--bg:#0b0f17;--panel:#141a24;--line:rgba(255,255,255,.08);--text:#f2f5fa;--muted:#9aa6b8;--accent:#3d8bfd;--warn:#ffb020;--danger:#ff6b6b}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(1200px 600px at 50% -10%,#1a2740,#07090e 60%);color:var(--text);font-family:system-ui,sans-serif;padding:24px}
+.device{width:min(1100px,96vw);aspect-ratio:4/3;border-radius:28px;border:10px solid #1c212b;box-shadow:0 30px 80px rgba(0,0,0,.55);background:var(--bg);overflow:hidden;position:relative}
+.screen{height:100%;display:flex;flex-direction:column}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 10px;border-bottom:1px solid var(--line);background:rgba(20,26,36,.92)}
+.nav h1{margin:0;font-size:28px}.icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:#1a2230;color:var(--text);cursor:pointer}
+.content{flex:1;overflow:auto;padding:18px 22px 28px}
+.section{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin:8px 0 12px}
+.host,.card{width:100%;text-align:left;border:1px solid var(--line);background:linear-gradient(180deg,#182131,#121821);border-radius:16px;padding:16px 18px;color:var(--text);cursor:pointer;margin-bottom:12px}
+.host strong{display:block;font-size:18px}.host span,.host small{display:block;color:var(--muted);font-size:13px}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;gap:16px;cursor:default}
+.toggle{width:48px;height:28px;border-radius:999px;border:none;background:#334155;position:relative;cursor:pointer}.toggle.on{background:var(--accent)}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.15s}.toggle.on::after{left:23px}
+.session{height:100%;background:linear-gradient(145deg,#1e3a6e,#0c1220);position:relative}
+.stub{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:40px}
+.chrome{position:absolute;top:16px;left:50%;transform:translateX(calc(-50% + var(--dx,0px)));display:flex;gap:12px;align-items:center;padding:10px 14px;border-radius:999px;background:rgba(20,24,32,.72);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(14px);cursor:grab;max-width:90%;z-index:2}
+.chrome .meta strong{display:block;font-size:13px}.chrome .meta span{display:block;font-size:11px;color:#b7c2d3}.chrome .warn{color:var(--warn);font-size:11px}
+.chrome .actions{display:flex;gap:6px;margin-left:auto}.chrome .actions button{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;cursor:pointer}
+.show{position:absolute;top:16px;right:16px;z-index:2;border:none;border-radius:12px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer}
+.row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}.row span:last-child{color:var(--muted);font-family:ui-monospace,monospace;font-size:12px}
+.primary{margin-top:14px;width:100%;border:none;border-radius:12px;padding:12px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer}
+.hint{color:var(--muted);font-size:13px;margin-top:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="device" id="app"></div>
+<p class="hint">DeskBridge slice 1 UI · drag chrome · hide pill · file transfer</p>
+<script>
+const S={screen:"hosts",weak:false,chromeHidden:false,dx:0,macros:true,retina:true,audio:true,lock:true,from:"hosts"};
+const app=document.getElementById("app");
+function meter(){return S.weak?{rtt:180,up:4,w:"Weak link — slideshow risk (hotel/hotspot)."}:{rtt:42,up:S.retina?24:28,w:null}}
+function render(){if(S.screen==="session")return session();if(S.screen==="settings")return settings();if(S.screen==="transfer")return transfer();hosts()}
+function hosts(){app.innerHTML=`<div class="screen"><div class="nav"><h1>DeskBridge</h1><div><button class="icon-btn" id="set">⚙</button></div></div><div class="content"><div class="section">Hosts</div><button class="host" id="connect"><strong>Home Mac mini</strong><span>Apple Screen Sharing · mac-mini.local:5900</span><small>Ideal: host upload ≥20 Mbps · ping &lt;50 ms</small></button><div class="section">Network demo</div><div class="card toggle-row"><div><strong>Simulate hotel / plane weak link</strong><div style="color:var(--muted);font-size:13px;margin-top:4px">Honest degrade from the review</div></div><button class="toggle ${S.weak?"on":""}" id="weak"></button></div></div></div>`;document.getElementById("weak").onclick=()=>{S.weak=!S.weak;render()};document.getElementById("connect").onclick=()=>{S.screen="session";S.chromeHidden=false;S.dx=0;render()};document.getElementById("set").onclick=()=>{S.from="hosts";S.screen="settings";render()}}
+function session(){const m=meter();app.innerHTML=`<div class="session"><div class="stub"><div style="font-size:56px">🖥</div><h2 style="margin:0">Remote surface (slice 1 stub)</h2><p style="color:rgba(255,255,255,.7)">VNC / Screen Sharing / RDP pixels in slice 2.</p></div>${S.chromeHidden?`<button class="show" id="show">Show controls</button>`:`<div class="chrome" id="chrome" style="--dx:${S.dx}px"><div class="meta"><strong>Home Mac mini</strong><span>Direct / LAN · RTT ~${m.rtt} ms · upload ~${m.up} Mbps</span>${m.w?`<div class="warn">${m.w}</div>`:""}</div><div class="actions"><button id="tr" title="Transfer">⇄</button><button id="set">⚙</button><button id="hide">👁</button><button id="x" style="color:var(--danger)">×</button></div></div>`}</div>`;if(S.chromeHidden){document.getElementById("show").onclick=()=>{S.chromeHidden=false;render()};return}document.getElementById("hide").onclick=()=>{S.chromeHidden=true;render()};document.getElementById("x").onclick=()=>{S.screen="hosts";render()};document.getElementById("tr").onclick=()=>{S.screen="transfer";render()};document.getElementById("set").onclick=()=>{S.from="session";S.screen="settings";render()};const c=document.getElementById("chrome");let sx=0,ox=0;c.onpointerdown=(e)=>{sx=e.clientX;ox=S.dx;c.setPointerCapture(e.pointerId)};c.onpointermove=(e)=>{if(!c.hasPointerCapture(e.pointerId))return;S.dx=ox+(e.clientX-sx);c.style.setProperty("--dx",S.dx+"px")};c.onpointerup=()=>{const w=app.clientWidth;if(S.dx<-w*.15)S.dx=-w*.28;else if(S.dx>w*.15)S.dx=w*.28;else S.dx=0;c.style.setProperty("--dx",S.dx+"px")}}
+function settings(){const m=S.macros?["Option-Space","Option-Tab","Option-Q"]:["Globe-Cmd-Space","Globe-Cmd-Tab","Globe-Cmd-Q"];app.innerHTML=`<div class="screen"><div class="nav"><h1>Session settings</h1><button class="icon-btn" id="back">×</button></div><div class="content"><div class="card toggle-row"><strong>Retina</strong><button class="toggle ${S.retina?"on":""}" id="retina"></button></div><div class="card toggle-row"><strong>Audio</strong><button class="toggle ${S.audio?"on":""}" id="audio"></button></div><div class="card toggle-row"><strong>Lock host display</strong><button class="toggle ${S.lock?"on":""}" id="lock"></button></div><div class="card toggle-row"><div><strong>Option macros</strong><div style="color:var(--muted);font-size:12px">iPadOS hijacks Cmd-Space/Tab/Q</div></div><button class="toggle ${S.macros?"on":""}" id="macros"></button></div><div class="card"><div class="row"><span>Cmd-Space</span><span>${m[0]}</span></div><div class="row"><span>Cmd-Tab</span><span>${m[1]}</span></div><div class="row"><span>Cmd-Q</span><span>${m[2]}</span></div></div><button class="primary" id="done">Done</button></div></div>`;["retina","audio","lock","macros"].forEach(k=>{document.getElementById(k).onclick=()=>{S[k]=!S[k];render()}});const back=()=>{S.screen=S.from;render()};document.getElementById("back").onclick=back;document.getElementById("done").onclick=back}
+function transfer(){app.innerHTML=`<div class="screen"><div class="nav"><h1>File transfer</h1><button class="icon-btn" id="back">×</button></div><div class="content"><div class="card" style="color:var(--muted);font-size:13px;cursor:default">Built-in iPad ↔ host channel — Jump gap (08:27). Mock queue for slice 1.</div><div class="section">Queue</div><div class="card" style="cursor:default"><div class="row"><span>↑ project-notes.md</span><span>Ready</span></div><div class="row"><span>↓ timeline-proxy.mov</span><span>Mock done</span></div></div><button class="primary" id="back2">Done</button></div></div>`;const b=()=>{S.screen="session";render()};document.getElementById("back").onclick=b;document.getElementById("back2").onclick=b}
+render();
+</script>
+</body>
+</html>
