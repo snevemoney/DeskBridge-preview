@@ -1,7 +1,11 @@
 # DeskBridge-preview
 
-Public HTML stand-in for [DeskBridge](https://github.com/snevemoney/DeskBridge) slice 1 (SwiftUI iPad remote-desktop client).
+Public single-file HTML stand-in for [DeskBridge](https://github.com/snevemoney/DeskBridge) slice 1.
 
-Open: https://snevemoney.github.io/DeskBridge-preview/
+**Open now (no Pages required):**
+https://htmlpreview.github.io/?https://github.com/snevemoney/DeskBridge-preview/blob/main/index.html
 
-Not Jump Desktop. Fluid protocol is intentionally unsupported.
+Or raw CDN (purge if stale):
+https://cdn.jsdelivr.net/gh/snevemoney/DeskBridge-preview@main/index.html
+
+Not Jump Desktop. Fluid is intentionally unsupported.
